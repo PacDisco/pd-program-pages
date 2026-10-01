@@ -21,13 +21,15 @@
 //   DASHBOARD_URL              default https://dashboard.pacificdiscovery.org
 //   URL                        this site's URL (Netlify sets it)
 //   CANONICAL_BASE             default https://www.pacificdiscovery.org/programs/
+//   GOOGLE_PLACES_API_KEY      optional; fills in Google review widgets (rating +
+//                              count) at build time. The nightly rebuild keeps them fresh.
 //
 // Local: `node scripts/build.mjs --sample` renders sample/*.json instead.
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { renderStandalone, renderProgram, seoFor, jsonLd, PROGRAM_CSS } from '../src/render.mjs';
+import { renderStandalone, renderProgram, seoFor, jsonLd, parseWidget, PROGRAM_CSS } from '../src/render.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
@@ -94,6 +96,35 @@ export function databaseVarsPresent(env = process.env) {
   return Object.keys(env).filter((k) => /DATABASE_URL|^NEON_|^PG(HOST|PASSWORD|USER|DATABASE)$/i.test(k));
 }
 
+/** Google has no embeddable reviews widget, so the build asks the Places API. */
+const googleCache = new Map();
+async function addGoogleRatings(data) {
+  const widgets = data?.hero?.widgets;
+  if (!Array.isArray(widgets) || !widgets.length) return data;
+  const key = process.env.GOOGLE_PLACES_API_KEY;
+  for (const w of widgets) {
+    const pw = parseWidget(w);
+    if (pw?.kind !== 'google') continue;
+    if (!key) { console.warn('Google review widget skipped: GOOGLE_PLACES_API_KEY is not set'); continue; }
+    if (!googleCache.has(pw.placeId)) {
+      try {
+        const res = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(pw.placeId)}`, {
+          headers: { 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': 'rating,userRatingCount,googleMapsUri' },
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const j = await res.json();
+        googleCache.set(pw.placeId, { rating: j.rating, count: j.userRatingCount, url: j.googleMapsUri });
+      } catch (e) {
+        // A Google hiccup must not block publishing; the widget is just left out.
+        console.warn(`Google rating for ${pw.placeId} failed: ${e.message}`);
+        googleCache.set(pw.placeId, null);
+      }
+    }
+    if (googleCache.get(pw.placeId)) w._google = googleCache.get(pw.placeId);
+  }
+  return data;
+}
+
 async function main() {
   const dbVars = databaseVarsPresent();
   if (dbVars.length) {
@@ -110,7 +141,7 @@ async function main() {
 
   for (const prog of programs) {
     if (!SLUG_RE.test(prog.slug || '')) { console.warn(`Skipping invalid slug: ${prog.slug}`); continue; }
-    const data = await localiseMedia(prog.data, copied);
+    const data = await addGoogleRatings(await localiseMedia(prog.data, copied));
     const dir = path.join(DIST, 'programs', prog.slug);
     await fs.mkdir(dir, { recursive: true });
 

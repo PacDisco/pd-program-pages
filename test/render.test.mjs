@@ -185,3 +185,35 @@ test('review badges: stars for /5, percent for %, link only when set, old line m
   const bad = renderProgram(p);
   assert.ok(!bad.includes('<script>x') && !bad.includes('javascript:'));
 });
+
+test('live review widgets: parsed, rebuilt from safe fields, never pasted raw', async () => {
+  const { parseWidget } = await import('../src/render.mjs');
+  const ga = '<iframe style="border:none;height:84px;overflow:auto;width:352px;" src="https://www.goabroad.com/reviews/generator/provider/5491/0/352/84/0/0?layout_type=2&amp;theme=light" frameborder="0"></iframe>';
+  const go = '<div class="go-overseas-review-widget-component widget-programshort" data-gooverseas-widget-type="program" data-gooverseas-widget-id="43632" data-gooverseas-widget-name="programshort" data-gooverseas-widget-theme="primary" data-gooverseas-widget-link="yes"></div><script>evil()</script>';
+  assert.deepEqual(parseWidget({ type: 'GoAbroad', code: ga }), { kind: 'goabroad', src: 'https://www.goabroad.com/reviews/generator/provider/5491/0/352/84/0/0?layout_type=2&theme=light', width: 352, height: 84 });
+  assert.equal(parseWidget({ type: 'GoOverseas', code: go }).id, '43632');
+  assert.equal(parseWidget({ type: 'GoOverseas', code: '43632' }).id, '43632');
+  assert.equal(parseWidget({ type: 'Google', code: 'ChIJN1t_tDeuEmsRUsoyG83frY4' }).placeId, 'ChIJN1t_tDeuEmsRUsoyG83frY4');
+  assert.equal(parseWidget({ type: 'GoAbroad', code: '<iframe src="https://evil.test/x">' }), null);
+  assert.equal(parseWidget({ type: 'GoOverseas', code: 'data-gooverseas-widget-id="1 onload=x"' }), null);
+  assert.equal(parseWidget({ type: 'GoOverseas', code: 'data-gooverseas-widget-id="5" data-gooverseas-widget-name="x\\" onclick=\\"y"' }).name, 'programshort');
+
+  const p = normalizeProgram(sample);
+  p.hero.widgets = [{ type: 'GoAbroad', code: ga }, { type: 'GoOverseas', code: go },
+    { type: 'Google', code: 'ChIJN1t_tDeuEmsRUsoyG83frY4', _google: { rating: 4.84, count: 1234, url: 'https://maps.google.com/?cid=1' } }];
+  const html = renderProgram(p);
+  assert.ok(html.includes('<iframe class="pdp-widget__frame" src="https://www.goabroad.com/reviews/generator/provider/5491/0/352/84/0/0?layout_type=2&amp;theme=light"'));
+  assert.ok(html.includes('data-gooverseas-widget-id="43632"'));
+  assert.equal((html.match(/gooverseas\.com\/static\/0\.2\.0\/main\.min\.js/g) || []).length, 1, 'loader once');
+  assert.ok(!html.includes('evil()'), 'pasted script never output');
+  assert.ok(html.includes('4.8</span>') && html.includes('1,234 reviews') && html.includes('on Google'));
+
+  const ed = renderProgram(p, { editable: true });
+  assert.ok(!ed.includes('main.min.js'), 'no third-party script in the editor');
+  assert.ok(ed.includes('GoOverseas reviews widget #43632'));
+  assert.ok(ed.includes('pde-cover'));
+
+  p.hero.widgets = [{ type: 'Google', code: 'ChIJN1t_tDeuEmsRUsoyG83frY4' }];
+  assert.ok(!renderProgram(p).includes('pdp-widget'), 'Google without fetched data renders nothing live');
+  assert.ok(!renderProgram(p).includes('main.min.js'));
+});

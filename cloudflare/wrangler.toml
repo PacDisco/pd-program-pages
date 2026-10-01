@@ -14,3 +14,7 @@ PROGRAM_SITE = "https://pd-program-pages.netlify.app"
 SHELL_PATH = "/programs"
 # Height of the site's fixed header, so the program's sticky bar sits under it.
 STICKY_TOP = "80px"
+# Leave empty in production. For a preview, run:
+#   npx wrangler dev --var PREVIEW_ORIGIN:https://www.pacificdiscovery.org
+# and open http://localhost:8787/programs/south-america-gap-semester
+PREVIEW_ORIGIN = ""

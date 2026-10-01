@@ -15,7 +15,12 @@
 //
 // Escape hatch: add ?pd-legacy=1 to see the old PHP page.
 //
-// Vars (wrangler.toml): PROGRAM_SITE, SHELL_PATH, STICKY_TOP
+// Preview before going live: set PREVIEW_ORIGIN (e.g. https://www.pacificdiscovery.org)
+// and run `npx wrangler dev` (or deploy to workers.dev with no route). The Worker
+// then fetches the PHP pages from that origin, adds a <base> tag so the site's CSS
+// and images load, and marks the page noindex. Nothing on www changes.
+//
+// Vars (wrangler.toml): PROGRAM_SITE, SHELL_PATH, STICKY_TOP, PREVIEW_ORIGIN
 
 const SLUG_RE = /^\/programs\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/;
 
@@ -23,22 +28,25 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const m = SLUG_RE.exec(url.pathname);
+    const preview = /^https:\/\/[a-z0-9.-]+$/i.test(env.PREVIEW_ORIGIN || '') ? env.PREVIEW_ORIGIN : '';
+    const base = preview || url.origin;
+    const passThrough = () => (preview ? fetch(new URL(url.pathname + url.search, preview)) : fetch(request));
     if (!m || (request.method !== 'GET' && request.method !== 'HEAD') || url.searchParams.has('pd-legacy')) {
-      return fetch(request);
+      return passThrough();
     }
     const slug = m[1];
 
     const frag = await loadFragment(env, slug);
-    if (!frag) return fetch(request);
+    if (!frag) return passThrough();
 
-    let origin = await fetch(request);
+    let origin = await passThrough();
     if (origin.status === 404) {
-      origin = await fetch(new URL(env.SHELL_PATH || '/programs', url.origin), { headers: request.headers });
-      if (!origin.ok) return fetch(request);
+      origin = await fetch(new URL(env.SHELL_PATH || '/programs', base), preview ? {} : { headers: request.headers });
+      if (!origin.ok) return passThrough();
     }
     if (!origin.ok || !(origin.headers.get('content-type') || '').includes('text/html')) return origin;
 
-    return rewrite(origin, frag, env);
+    return rewrite(origin, frag, env, preview);
   },
 };
 
@@ -65,7 +73,7 @@ function escText(s) {
   return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
 }
 
-function rewrite(origin, f, env) {
+function rewrite(origin, f, env, preview = '') {
   const seen = { canonical: false, description: false, ogTitle: false, ogDesc: false, ogImage: false, ogUrl: false };
   const css = String(f.css || '').replace(/<\/style/gi, '');
   const stickyTop = /^\d{1,3}px$/.test(env.STICKY_TOP || '') ? env.STICKY_TOP : '0px';
@@ -83,6 +91,8 @@ function rewrite(origin, f, env) {
     .on('link[rel="canonical"]', { element(e) { seen.canonical = true; if (f.canonical) e.setAttribute('href', f.canonical); } })
     .on('head', {
       element(e) {
+        // Preview: make the site's relative CSS/JS/image paths resolve to the real site.
+        if (preview) e.prepend(`<base href="${escAttr(preview)}/"><meta name="robots" content="noindex">`, { html: true });
         e.onEndTag((end) => {
           let add = `<style id="pdp-css">${css}.pdp{--pdp-sticky-top:${stickyTop}}</style>`;
           if (!seen.canonical && f.canonical) add += `<link rel="canonical" href="${escAttr(f.canonical)}">`;
@@ -102,5 +112,6 @@ function rewrite(origin, f, env) {
   const headers = new Headers(out.headers);
   headers.delete('content-length');
   headers.set('x-pd-program-page', escText(f.publishedAt || 'live'));
+  if (preview) headers.set('x-robots-tag', 'noindex');
   return new Response(out.body, { status: origin.status, headers });
 }
