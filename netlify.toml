@@ -1,0 +1,47 @@
+# pd-program-pages — static origin for www.pacificdiscovery.org/programs/<slug>
+#
+# No functions, no database, no Identity. The only secret on this site is
+# PROGRAM_PAGES_BUILD_TOKEN, which can read PUBLISHED program pages and their
+# images from the dashboard and nothing else.
+
+[build]
+  command = "node scripts/build.mjs"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Deploy previews / branch deploys render the sample content, never live data.
+[context.deploy-preview]
+  command = "node scripts/build.mjs --sample"
+[context.branch-deploy]
+  command = "node scripts/build.mjs --sample"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# The real pages live on www (canonical tags point there). Keep this origin out
+# of search results. The Cloudflare Worker builds its response from the www
+# origin's headers, so this does not leak onto pacificdiscovery.org.
+[[headers]]
+  for = "/programs/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Access-Control-Allow-Origin = "*"
+
+# The template, imported by the editor in pd-dashboard.
+[[headers]]
+  for = "/_pd/render.mjs"
+  [headers.values]
+    Content-Type = "text/javascript; charset=utf-8"
+    Access-Control-Allow-Origin = "https://dashboard.pacificdiscovery.org"
+    Cache-Control = "public, max-age=60"
+
+[[headers]]
+  for = "/_pd/media/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

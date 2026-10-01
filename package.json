@@ -1,0 +1,13 @@
+{
+  "name": "pd-program-pages",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static origin for Pacific Discovery program pages, edited in pd-dashboard → Program Pages.",
+  "type": "module",
+  "engines": { "node": "20" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:sample": "node scripts/build.mjs --sample",
+    "test": "node --test test/*.test.mjs"
+  }
+}

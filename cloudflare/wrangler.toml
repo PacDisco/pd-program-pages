@@ -1,0 +1,16 @@
+name = "pd-program-pages"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+# Only program URLs run through the Worker; the rest of the site is untouched.
+routes = [
+  { pattern = "www.pacificdiscovery.org/programs/*", zone_name = "pacificdiscovery.org" }
+]
+
+[vars]
+# The pd-program-pages Netlify site (or a custom domain pointed at it).
+PROGRAM_SITE = "https://pd-program-pages.netlify.app"
+# Page whose header/footer is reused when the PHP site has no page at this URL yet.
+SHELL_PATH = "/programs"
+# Height of the site's fixed header, so the program's sticky bar sits under it.
+STICKY_TOP = "80px"
