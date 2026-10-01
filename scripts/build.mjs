@@ -87,7 +87,19 @@ async function localiseMedia(data, copied) {
   return out;
 }
 
+// This site must never hold database credentials (see README → Security notes).
+// If Netlify's Neon/DB extension gets connected to this project it injects one;
+// refuse to build so it's noticed and removed rather than silently carried.
+export function databaseVarsPresent(env = process.env) {
+  return Object.keys(env).filter((k) => /DATABASE_URL|^NEON_|^PG(HOST|PASSWORD|USER|DATABASE)$/i.test(k));
+}
+
 async function main() {
+  const dbVars = databaseVarsPresent();
+  if (dbVars.length) {
+    throw new Error(`Database credentials found in this site's environment (${dbVars.join(', ')}). ` +
+      'pd-program-pages must not have database access: disconnect the database in Netlify (Extensions → Neon) and remove these variables.');
+  }
   await fs.rm(DIST, { recursive: true, force: true });
   await fs.mkdir(path.join(DIST, '_pd'), { recursive: true });
   await fs.copyFile(path.join(ROOT, 'src', 'render.mjs'), path.join(DIST, '_pd', 'render.mjs'));

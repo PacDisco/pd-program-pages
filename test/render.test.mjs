@@ -72,14 +72,28 @@ test('order follows layout', () => {
 test('closed and full sessions get no Apply link; spots left shows', () => {
   const p = normalizeProgram(sample);
   p.dates.sessions = [
-    { start: '2027-02-11', end: '2027-04-21', season: 'Spring', status: 'Full', spotsLeft: '', applyUrl: '' },
-    { start: '2027-09-09', end: '2027-11-17', season: 'Fall', status: 'Limited spots', spotsLeft: 3, applyUrl: '' },
+    { start: '2000-01-10', end: '2000-03-20', season: 'Spring', status: 'Open', spotsLeft: '', applyUrl: '' },
+    { start: '2099-02-11', end: '2099-04-21', season: 'Spring', status: 'Full', spotsLeft: '', applyUrl: '' },
+    { start: '2099-09-09', end: '2099-11-17', season: 'Fall', status: 'Limited spots', spotsLeft: 3, applyUrl: '' },
   ];
   const html = renderProgram(p);
   assert.ok(html.includes('aria-disabled="true">Full<'));
   assert.ok(html.includes('Limited spots · 3 spots left'));
-  // Sticky bar skips the full session
-  assert.ok(html.includes('Next start Sep 9, 2027'));
+  assert.ok(!html.includes('10 Jan – 20 Mar 2000'), 'past session dropped from the live list');
+  // Hero "Next departure" skips past and full sessions
+  // Next departure sits in the sticky bar, before Apply now
+  assert.match(html, /<div class="pdp-bar__cta"><a class="pdp-next" href="https:\/\/www\.pacificdiscovery\.org\/apply" aria-label="Apply for the 9 Sep – 17 Nov 2099 departure"><span class="pdp-next__label">Next departure<\/span><span class="pdp-next__when">9 Sep 2099<\/span><span class="pdp-pill pdp-next__pill">3 spots left<\/span><\/a><a class="pdp-btn"/);
+  assert.ok(!html.slice(0, html.indexOf('pdp-bar')).includes('pdp-next'), 'not in the hero');
+  p.dates.sessions[2].applyUrl = 'https://www.pacificdiscovery.org/apply?program=sa-fall-2099';
+  assert.ok(renderProgram(p).includes('class="pdp-next" href="https://www.pacificdiscovery.org/apply?program=sa-fall-2099"'), "uses the session's own apply link");
+  // The old price/date line in the sticky bar is gone
+  assert.ok(!html.includes('Next start') && !html.includes('pdp-bar__meta'));
+  // Editor keeps past sessions so they can be edited or removed, and links the card to its row
+  const ed = renderProgram(p, { editable: true });
+  assert.ok(ed.includes('data-item="dates.sessions.0"'));
+  assert.ok(ed.includes('data-ref-item="dates.sessions.2"'));
+  p.dates.sessions = [];
+  assert.ok(!renderProgram(p).includes('pdp-next'), 'no card without a future date');
 });
 
 test('JSON-LD cannot break out of its script tag', () => {
@@ -137,4 +151,37 @@ test('sample build writes page, fragment, template and manifest', () => {
   assert.ok(frag.css.includes('.pdp{'));
   assert.ok(fs.existsSync(new URL('_pd/render.mjs', dir)));
   assert.equal(JSON.parse(fs.readFileSync(new URL('_pd/manifest.json', dir))).programs.length, 1);
+});
+
+test('review badges: stars for /5, percent for %, link only when set, old line migrated', async () => {
+  const { parseScore } = await import('../src/render.mjs');
+  assert.deepEqual(parseScore('4.5'), { value: 4.5, max: 5, pct: 90 });
+  assert.deepEqual(parseScore('4.5/5'), { value: 4.5, max: 5, pct: 90 });
+  assert.equal(parseScore('98%').max, 100);
+  assert.equal(parseScore('great'), null);
+
+  const p = normalizeProgram(sample);
+  p.hero.reviews = [
+    { source: 'GoAbroad', score: '4.5', count: 295, url: 'https://www.goabroad.com/x' },
+    { source: 'GoOverseas', score: '98%', count: 30, url: '' },
+  ];
+  const html = renderProgram(p);
+  assert.ok(html.includes('<a class="pdp-review" href="https://www.goabroad.com/x"'));
+  assert.ok(html.includes('style="width:90%"'), 'stars filled to 90%');
+  assert.ok(html.includes('295 reviews') && html.includes('on GoAbroad'));
+  assert.ok(html.includes('98%</span>') && html.includes('30 reviews') && html.includes('on GoOverseas'));
+  assert.ok(html.includes('4.5 out of 5 from 295 reviews on GoAbroad'), 'screen-reader text');
+  assert.equal((html.match(/<a class="pdp-review"/g) || []).length, 1, 'no link without a URL');
+
+  const ed = renderProgram(p, { editable: true });
+  assert.ok(ed.includes('data-item="hero.reviews.1"') && ed.includes('data-add="hero.reviews"'));
+
+  const old = normalizeProgram({ name: 'X', hero: { reviewText: '★ 4.9 on GoAbroad', reviewUrl: 'https://x.test' } });
+  assert.equal(old.hero.reviews.length, 1);
+  assert.equal(old.hero.reviews[0].url, 'https://x.test');
+  assert.ok(!('reviewText' in old.hero));
+
+  p.hero.reviews = [{ source: 'GoAbroad', score: '"><script>x</script>', count: 1, url: 'javascript:alert(1)' }];
+  const bad = renderProgram(p);
+  assert.ok(!bad.includes('<script>x') && !bad.includes('javascript:'));
 });
