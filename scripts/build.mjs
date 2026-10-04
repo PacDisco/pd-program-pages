@@ -99,8 +99,8 @@ export function databaseVarsPresent(env = process.env) {
 /** Google has no embeddable reviews widget, so the build asks the Places API. */
 const googleCache = new Map();
 async function addGoogleRatings(data) {
-  const widgets = data?.hero?.widgets;
-  if (!Array.isArray(widgets) || !widgets.length) return data;
+  const widgets = [...(data?.hero?.widgets || []), ...(data?.reviews?.widgets || [])];
+  if (!widgets.length) return data;
   const key = process.env.GOOGLE_PLACES_API_KEY;
   for (const w of widgets) {
     const pw = parseWidget(w);

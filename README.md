@@ -30,7 +30,8 @@ If the dashboard can't be reached, the build **fails**, and Netlify keeps servin
 
 ## Review widgets
 
-In the editor, **+ Add a live review widget** in the hero:
+In the editor, **+ Add a live review widget** in the hero, or **+ Add a GoAbroad or GoOverseas
+widget** in the Reviews section (shown above the quotes; a bigger review-list widget suits it):
 
 | Widget | What to paste | How it stays current |
 |---|---|---|

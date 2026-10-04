@@ -217,3 +217,21 @@ test('live review widgets: parsed, rebuilt from safe fields, never pasted raw', 
   assert.ok(!renderProgram(p).includes('pdp-widget'), 'Google without fetched data renders nothing live');
   assert.ok(!renderProgram(p).includes('main.min.js'));
 });
+
+test('reviews section takes GoAbroad / GoOverseas widgets too', async () => {
+  const ga = '<iframe style="border:none;height:500px;overflow:auto;width:400px;" src="https://www.goabroad.com/reviews/generator/provider/5491/0/400/500/0/0?layout_type=1&amp;theme=light"></iframe>';
+  const go = '<div class="go-overseas-review-widget-component widget-programlong" data-gooverseas-widget-type="program" data-gooverseas-widget-id="43632" data-gooverseas-widget-name="programlong" data-gooverseas-widget-theme="primary" data-gooverseas-widget-link="yes"></div><script>evil()</script>';
+  const p = normalizeProgram({ ...sample, hero: { ...sample.hero, widgets: [] }, reviews: { ...sample.reviews, widgets: [{ type: 'GoAbroad', code: ga }, { type: 'GoOverseas', code: go }] } });
+  const html = renderProgram(p);
+  const sec = html.slice(html.indexOf('id="reviews"'), html.indexOf('id="dates"'));
+  assert.ok(sec.includes('pdp-widgets-wrap--reviews'));
+  assert.ok(sec.includes('width="400" height="500"'));
+  assert.ok(sec.includes('data-gooverseas-widget-name="programlong"'));
+  assert.equal((html.match(/main\.min\.js/g) || []).length, 1, 'loader added for a reviews-section GoOverseas widget');
+  assert.ok(!html.includes('evil()'));
+  // Old pages without the field still render, and the editor shows the add button.
+  const old = normalizeProgram({ ...sample, reviews: { heading: 'x', quotes: [] } });
+  assert.deepEqual(old.reviews.widgets, []);
+  assert.ok(renderProgram(old, { editable: true }).includes('Add a GoAbroad or GoOverseas widget'));
+  assert.ok(!renderProgram(old).includes('pdp-widgets-wrap--reviews'));
+});
