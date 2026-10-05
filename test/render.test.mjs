@@ -235,3 +235,55 @@ test('reviews section takes GoAbroad / GoOverseas widgets too', async () => {
   assert.ok(renderProgram(old, { editable: true }).includes('Add a GoAbroad or GoOverseas widget'));
   assert.ok(!renderProgram(old).includes('pdp-widgets-wrap--reviews'));
 });
+
+test('hero photo focus: separate phone and computer positions, validated', async () => {
+  const { parseFocus } = await import('../src/render.mjs');
+  assert.equal(parseFocus('30% 20%'), '30% 20%');
+  assert.equal(parseFocus('130% -5%'), '');
+  assert.equal(parseFocus('150% 40%'), '100% 40%');
+  assert.equal(parseFocus('50%;background:url(x)'), '');
+  const p = normalizeProgram({ ...sample, hero: { ...sample.hero, imageFocus: '40% 30%', imageFocusMobile: '72% 25%' } });
+  const html = renderProgram(p);
+  assert.ok(html.includes('style="--pdp-pos:40% 30%;--pdp-pos-m:72% 25%;"'));
+  const { PROGRAM_CSS: css } = await import('../src/render.mjs');
+  assert.ok(css.includes('object-position:var(--pdp-pos-m,var(--pdp-pos,50% 50%))'));
+  const bad = renderProgram(normalizeProgram({ ...sample, hero: { ...sample.hero, imageFocus: '"><script>x</script>' } }));
+  assert.ok(!bad.includes('<script>x') && !bad.includes('--pdp-pos:'));
+});
+
+test('testimonials: quote marks added by the page, typed ones stripped', async () => {
+  const { stripQuotes } = await import('../src/render.mjs');
+  assert.equal(stripQuotes('“Best trip ever.”'), 'Best trip ever.');
+  assert.equal(stripQuotes('"Best trip ever."'), 'Best trip ever.');
+  assert.equal(stripQuotes("It's great"), "It's great");
+  const p = normalizeProgram({ ...sample, reviews: { ...sample.reviews, quotes: [{ quote: '"Life changing."', name: 'Maya, Spring 2026' }, { quote: '', name: '' }] } });
+  const html = renderProgram(p);
+  const sec = html.slice(html.indexOf('id="reviews"'), html.indexOf('id="dates"'));
+  assert.ok(sec.includes('<p class="pdp-quote__text pdp-ml">Life changing.</p>'));
+  assert.equal((sec.match(/pdp-quote-card/g) || []).length, 1, 'empty quote dropped on the live page');
+  assert.ok(sec.includes('“') && sec.includes('”'));
+  assert.ok(sec.includes('Maya, Spring 2026'));
+});
+
+test('tuition promotion: price slash, message, or both; expires on its own', async () => {
+  const { activePromo, jsonLd: ld } = await import('../src/render.mjs');
+  const mk = (facts) => normalizeProgram({ ...sample, facts: { ...sample.facts, tuition: 15500, ...facts } });
+  const facts = (h) => h.slice(h.indexOf('pdp-facts'), h.indexOf('</div></div>', h.indexOf('pdp-facts')));
+
+  const both = renderProgram(mk({ promoPrice: 14500, promoText: 'Save $1,000 when you apply by Dec 1', promoEnds: '2999-12-01' }));
+  assert.ok(facts(both).includes('<s class="pdp-price__was"><span class="pdp-sr">Was </span>$15,500</s>'));
+  assert.ok(facts(both).includes('$14,500') && facts(both).includes('Save $1,000 when you apply by Dec 1'));
+  assert.ok(both.includes('about $1,450 per week'), 'weekly figure uses the promo price');
+  assert.ok(ld(mk({ promoPrice: 14500, promoEnds: '2999-12-01' })).includes('"price":14500'));
+
+  const textOnly = renderProgram(mk({ promoText: 'Early-bird bonus: free gear pack' }));
+  assert.ok(!facts(textOnly).includes('pdp-price__was') && facts(textOnly).includes('free gear pack'));
+
+  assert.equal(activePromo(mk({ promoPrice: 16000 })), null, 'a "promo" above tuition is ignored');
+
+  const ended = mk({ promoPrice: 14500, promoText: 'Ended deal', promoEnds: '2000-01-01' });
+  assert.ok(!renderProgram(ended).includes('Ended deal') && !renderProgram(ended).includes('pdp-price__was'));
+  assert.ok(ld(ended).includes('"price":15500'));
+  assert.ok(renderProgram(ended, { editable: true }).includes('Promotion ended'));
+  assert.ok(!renderProgram(mk({ promoText: '<b>x</b>' })).includes('<b>x</b>'));
+});
