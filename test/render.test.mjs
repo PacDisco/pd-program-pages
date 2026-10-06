@@ -225,7 +225,7 @@ test('reviews section takes GoAbroad / GoOverseas widgets too', async () => {
   const go = '<div class="go-overseas-review-widget-component widget-programlong" data-gooverseas-widget-type="program" data-gooverseas-widget-id="43632" data-gooverseas-widget-name="programlong" data-gooverseas-widget-theme="primary" data-gooverseas-widget-link="yes"></div><script>evil()</script>';
   const p = normalizeProgram({ ...sample, hero: { ...sample.hero, widgets: [] }, reviews: { ...sample.reviews, widgets: [{ type: 'GoAbroad', code: ga }, { type: 'GoOverseas', code: go }] } });
   const html = renderProgram(p);
-  const sec = html.slice(html.indexOf('id="reviews"'), html.indexOf('id="dates"'));
+  const sec = html.slice(html.indexOf('id="reviews"'), html.indexOf('</section>', html.indexOf('id="reviews"')));
   assert.ok(sec.includes('pdp-widgets-wrap--reviews'));
   assert.ok(sec.includes('width="400" height="500"'));
   assert.ok(sec.includes('data-gooverseas-widget-name="programlong"'));
@@ -260,7 +260,7 @@ test('testimonials: quote marks added by the page, typed ones stripped', async (
   assert.equal(stripQuotes("It's great"), "It's great");
   const p = normalizeProgram({ ...sample, reviews: { ...sample.reviews, quotes: [{ quote: '"Life changing."', name: 'Maya, Spring 2026' }, { quote: '', name: '' }] } });
   const html = renderProgram(p);
-  const sec = html.slice(html.indexOf('id="reviews"'), html.indexOf('id="dates"'));
+  const sec = html.slice(html.indexOf('id="reviews"'), html.indexOf('</section>', html.indexOf('id="reviews"')));
   assert.ok(sec.includes('<p class="pdp-quote__text pdp-ml">Life changing.</p>'));
   assert.equal((sec.match(/pdp-quote-card/g) || []).length, 1, 'empty quote dropped on the live page');
   assert.ok(sec.includes('“') && sec.includes('”'));
