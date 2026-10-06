@@ -150,7 +150,9 @@ test('sample build writes page, fragment, template and manifest', () => {
   assert.ok(frag.html.startsWith('<div class="pdp">'));
   assert.ok(frag.css.includes('.pdp{'));
   assert.ok(fs.existsSync(new URL('_pd/render.mjs', dir)));
-  assert.equal(JSON.parse(fs.readFileSync(new URL('_pd/manifest.json', dir))).programs.length, 1);
+  const n = fs.readdirSync(new URL('../sample/', import.meta.url)).filter((f) => f.endsWith('.json')).length;
+  assert.equal(JSON.parse(fs.readFileSync(new URL('_pd/manifest.json', dir))).programs.length, n);
+  for (const s of ['australia-bali-gap-semester', 'southeast-asia-gap-semester', 'polynesian-journey-gap-semester']) assert.ok(fs.existsSync(new URL(`programs/${s}/index.html`, dir)), s);
 });
 
 test('review badges: stars for /5, percent for %, link only when set, old line migrated', async () => {
