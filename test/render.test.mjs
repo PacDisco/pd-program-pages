@@ -261,10 +261,44 @@ test('testimonials: quote marks added by the page, typed ones stripped', async (
   const p = normalizeProgram({ ...sample, reviews: { ...sample.reviews, quotes: [{ quote: '"Life changing."', name: 'Maya, Spring 2026' }, { quote: '', name: '' }] } });
   const html = renderProgram(p);
   const sec = html.slice(html.indexOf('id="reviews"'), html.indexOf('</section>', html.indexOf('id="reviews"')));
-  assert.ok(sec.includes('<p class="pdp-quote__text pdp-ml">Life changing.</p>'));
-  assert.equal((sec.match(/pdp-quote-card/g) || []).length, 1, 'empty quote dropped on the live page');
-  assert.ok(sec.includes('“') && sec.includes('”'));
+  assert.ok(sec.includes('<p class="pdp-rev__text pdp-ml">Life changing.</p>'));
+  assert.equal((sec.match(/class="pdp-rev /g) || []).length, 1, 'empty quote dropped on the live page');
+  assert.ok(sec.includes('“'));
   assert.ok(sec.includes('Maya, Spring 2026'));
+  assert.equal(p.reviews.quotes[0].kind, 'Review', 'older quotes become review cards');
+});
+
+test('review wall: review and award cards, read more, more button', async () => {
+  const long = 'We loved it. '.repeat(30);
+  const quotes = [
+    { kind: 'Review', quote: long, name: 'Liam Carter', detail: 'South America, Spring 2026', source: 'GoOverseas', url: 'https://www.gooverseas.com/x' },
+    { kind: 'Award', awardLabel: 'Go Overseas', awardTitle: 'Top Rated Program', awardText: '2025 winner' },
+    { kind: 'Award', awardTitle: 'Accredited', badge: 'https://example.com/badge.png', badgeAlt: 'Gap Year Association badge' },
+    { kind: 'Award', awardTitle: '' }, // empty award: dropped live
+    ...Array.from({ length: 5 }, (_, i) => ({ kind: 'Review', quote: `Short review ${i}`, name: `Student ${i}` })),
+  ];
+  const p = normalizeProgram({ ...sample, reviews: { ...sample.reviews, visible: 6, moreText: 'Show more reviews', quotes } });
+  const html = renderProgram(p);
+  const sec = html.slice(html.indexOf('id="reviews"'), html.indexOf('</section>', html.indexOf('id="reviews"')));
+  assert.equal((sec.match(/class="pdp-wall__item"/g) || []).length, 8, 'empty award skipped');
+  assert.equal((sec.match(/is-extra/g) || []).length, 2, 'cards past the limit hidden behind the button');
+  assert.ok(sec.includes('id="pdp-wall-more"') && sec.includes('Show more reviews'));
+  assert.ok(sec.includes('is-clamped') && sec.includes('Read more'), 'long review gets read more');
+  assert.equal((sec.match(/class="pdp-rev__t"/g) || []).length, 1, 'short reviews have no toggle');
+  assert.ok(sec.includes('href="https://www.gooverseas.com/x"') && sec.includes('View on GoOverseas'));
+  assert.ok(sec.includes('>LC</span>'), 'initials stand in for a photo');
+  assert.ok(sec.includes('Top Rated Program') && sec.includes('pdp-award__laurel'), 'award with laurels');
+  assert.ok(sec.includes('alt="Gap Year Association badge"') && sec.includes('pdp-award--badge'), 'badge replaces laurels');
+
+  const all = renderProgram(normalizeProgram({ ...p, reviews: { ...p.reviews, visible: 0 } }));
+  assert.ok(!all.includes('pdp-wall-more') && !all.includes('is-extra'), '0 shows every card');
+
+  const ed = renderProgram(p, { editable: true });
+  assert.ok(ed.includes('data-list="reviews.quotes"') && ed.includes('data-f="reviews.quotes.1.awardTitle"'));
+  assert.ok(!ed.includes('is-extra'), 'editor shows every card');
+
+  const bad = renderProgram(normalizeProgram({ ...sample, reviews: { ...sample.reviews, quotes: [{ kind: 'Review', quote: '<script>x</script>', name: '"><img onerror=1>', url: 'javascript:alert(1)', source: 'Google' }] } }));
+  assert.ok(!bad.includes('<script>x') && !bad.includes('<img onerror') && !bad.includes('javascript:'));
 });
 
 test('tuition promotion: price slash, message, or both; expires on its own', async () => {
