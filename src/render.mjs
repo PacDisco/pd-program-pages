@@ -1035,7 +1035,9 @@ details[open]>summary .pdp-chev{transform:rotate(-135deg)}
 .pdp-rev{display:flex;gap:12px;padding:26px 24px 22px 18px;margin:0}
 .pdp-rev__mark{flex:none;font-family:'DM Serif Display',Georgia,serif;font-size:58px;line-height:.9;height:40px;color:var(--pdp-orange)}
 .pdp-rev__main{flex:1;min-width:0;display:flex;flex-direction:column}
-.pdp-rev__q{flex:1;margin:0}
+.pdp .pdp-rev__q{flex:1;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;max-width:none;width:auto;text-align:left;font-style:normal;font-size:inherit;quotes:none}
+.pdp .pdp-rev__q::before,.pdp .pdp-rev__q::after{content:none;display:none}
+.pdp .pdp-rev__q .pdp-rev__text{margin:0;padding:0;border:0;text-align:left;font-style:normal;max-width:none}
 .pdp-rev__text{font-size:15px;line-height:1.6;color:var(--pdp-body)}
 .pdp-rev__text.is-clamped{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
 .pdp-rev__t:checked~.pdp-rev__q .pdp-rev__text{display:block;-webkit-line-clamp:unset}
