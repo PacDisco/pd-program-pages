@@ -12,8 +12,12 @@ routes = [
 PROGRAM_SITE = "https://pd-program-pages.netlify.app"
 # Page whose header/footer is reused when the PHP site has no page at this URL yet.
 SHELL_PATH = "/programs"
-# Height of the site's fixed header, so the program's sticky bar sits under it.
-STICKY_TOP = "80px"
+# Height of the site's fixed header, so the program's sticky bar sits directly
+# under it. The header is 60px up to 1024px wide and 90px from 1025px (the site's
+# own breakpoint), so it takes two values.
+STICKY_TOP = "60px"
+STICKY_TOP_WIDE = "90px"
+STICKY_WIDE_FROM = "1025px"
 # Leave empty in production. For a preview, run:
 #   npx wrangler dev --var PREVIEW_ORIGIN:https://www.pacificdiscovery.org
 # and open http://localhost:8787/programs/south-america-gap-semester

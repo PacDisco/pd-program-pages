@@ -20,9 +20,34 @@
 // then fetches the PHP pages from that origin, adds a <base> tag so the site's CSS
 // and images load, and marks the page noindex. Nothing on www changes.
 //
-// Vars (wrangler.toml): PROGRAM_SITE, SHELL_PATH, STICKY_TOP, PREVIEW_ORIGIN
+// Vars (wrangler.toml): PROGRAM_SITE, SHELL_PATH, STICKY_TOP, STICKY_TOP_WIDE,
+//   STICKY_WIDE_FROM, PREVIEW_ORIGIN
 
 const SLUG_RE = /^\/programs\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/;
+
+const PX_RE = /^\d{1,4}px$/;
+
+/**
+ * Where the program's sticky section bar sits: directly under the site's fixed
+ * header. That header changes height with the screen (60px up to 1024px wide,
+ * 90px from 1025px on the live site), so one number can't be right everywhere —
+ * a single 80px left a 20px gap on phones and tucked the bar 10px under the
+ * header on desktop.
+ *
+ *   STICKY_TOP        header height on phones and tablets (the base value)
+ *   STICKY_TOP_WIDE   header height on wide screens (optional)
+ *   STICKY_WIDE_FROM  the width the wide value starts at (optional, default 1025px)
+ *
+ * Anything that isn't a plain pixel value is ignored rather than injected.
+ */
+export function stickyCss(env = {}) {
+  const base = PX_RE.test(env.STICKY_TOP || '') ? env.STICKY_TOP : '0px';
+  let out = `.pdp{--pdp-sticky-top:${base}}`;
+  const wide = PX_RE.test(env.STICKY_TOP_WIDE || '') ? env.STICKY_TOP_WIDE : '';
+  const from = PX_RE.test(env.STICKY_WIDE_FROM || '') ? env.STICKY_WIDE_FROM : '1025px';
+  if (wide && wide !== base) out += `@media (min-width:${from}){.pdp{--pdp-sticky-top:${wide}}}`;
+  return out;
+}
 
 export default {
   async fetch(request, env) {
@@ -76,7 +101,6 @@ function escText(s) {
 function rewrite(origin, f, env, preview = '') {
   const seen = { canonical: false, description: false, ogTitle: false, ogDesc: false, ogImage: false, ogUrl: false };
   const css = String(f.css || '').replace(/<\/style/gi, '');
-  const stickyTop = /^\d{1,3}px$/.test(env.STICKY_TOP || '') ? env.STICKY_TOP : '0px';
   const meta = (attrName, key, value) => ({
     element(e) { seen[key] = true; e.setAttribute('content', value); },
   });
@@ -94,7 +118,7 @@ function rewrite(origin, f, env, preview = '') {
         // Preview: make the site's relative CSS/JS/image paths resolve to the real site.
         if (preview) e.prepend(`<base href="${escAttr(preview)}/"><meta name="robots" content="noindex">`, { html: true });
         e.onEndTag((end) => {
-          let add = `<style id="pdp-css">${css}.pdp{--pdp-sticky-top:${stickyTop}}</style>`;
+          let add = `<style id="pdp-css">${css}${stickyCss(env)}</style>`;
           if (!seen.canonical && f.canonical) add += `<link rel="canonical" href="${escAttr(f.canonical)}">`;
           if (!seen.description) add += `<meta name="description" content="${escAttr(f.description)}">`;
           if (!seen.ogTitle) add += `<meta property="og:title" content="${escAttr(f.title)}">`;
