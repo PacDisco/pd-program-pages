@@ -101,7 +101,7 @@ test('normalizeLanding repairs old or partial pages', () => {
   assert.equal(p.layout[0].show, false);
   assert.equal(p.layout.length, LANDING_SECTIONS.length);
   assert.equal(p.hero.headline, 'Hi');
-  assert.ok(Array.isArray(p.hero.prints) && Array.isArray(p.faq.items));
+  assert.ok(Array.isArray(p.faq.items) && Array.isArray(p.week.days));
 });
 
 test('placeholders in the starter are found', () => {

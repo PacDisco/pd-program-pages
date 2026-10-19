@@ -39,7 +39,7 @@ drafts, publishing, history, photos, the build and the Worker.
 - **Address:** `www.pacificdiscovery.org/lp/<slug>` (built to `dist/lp/<slug>/`).
   The Worker has a second route for `/lp/*`. The PHP site has no page there, so the
   Worker borrows the header and footer from `SHELL_PATH`.
-- **Sections:** hero (photo, two photo prints, stamp), stats strip, reasons, comparison
+- **Sections:** hero (background photo and stamp), stats strip, reasons, comparison
   table (our column + up to 3 others; an empty column heading hides it), a week in the
   life (swipeable), quotes, photo ribbon, safety, pricing with an offer card, FAQ
   (also output as FAQPage structured data) and a closing call to action. Each can be
