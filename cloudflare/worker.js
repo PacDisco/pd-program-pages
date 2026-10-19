@@ -1,6 +1,7 @@
 // cloudflare/worker.js — serves published program pages on www.pacificdiscovery.org
 //
-// Route: www.pacificdiscovery.org/programs/*
+// Routes: www.pacificdiscovery.org/programs/*  (program pages)
+//         www.pacificdiscovery.org/lp/*        (landing pages, same flow)
 //
 // For /programs/<slug>:
 //   1. Ask pd-program-pages for /programs/<slug>/fragment.json.
@@ -23,7 +24,8 @@
 // Vars (wrangler.toml): PROGRAM_SITE, SHELL_PATH, STICKY_TOP, STICKY_TOP_WIDE,
 //   STICKY_WIDE_FROM, PREVIEW_ORIGIN
 
-const SLUG_RE = /^\/programs\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/;
+// /programs/<slug> and /lp/<slug>. The first group is the folder on the program site.
+export const SLUG_RE = /^\/(programs|lp)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/;
 
 const PX_RE = /^\d{1,4}px$/;
 
@@ -59,9 +61,9 @@ export default {
     if (!m || (request.method !== 'GET' && request.method !== 'HEAD') || url.searchParams.has('pd-legacy')) {
       return passThrough();
     }
-    const slug = m[1];
+    const [, dir, slug] = m;
 
-    const frag = await loadFragment(env, slug);
+    const frag = await loadFragment(env, slug, dir);
     if (!frag) return passThrough();
 
     let origin = await passThrough();
@@ -75,11 +77,11 @@ export default {
   },
 };
 
-async function loadFragment(env, slug) {
+async function loadFragment(env, slug, dir = 'programs') {
   const base = (env.PROGRAM_SITE || '').replace(/\/+$/, '');
   if (!base) return null;
   try {
-    const res = await fetch(`${base}/programs/${slug}/fragment.json`, {
+    const res = await fetch(`${base}/${dir}/${slug}/fragment.json`, {
       cf: { cacheTtl: 60, cacheEverything: true },
       signal: AbortSignal.timeout(2500),
     });

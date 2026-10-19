@@ -2,9 +2,10 @@ name = "pd-program-pages"
 main = "worker.js"
 compatibility_date = "2026-09-01"
 
-# Only program URLs run through the Worker; the rest of the site is untouched.
+# Only program and landing-page URLs run through the Worker; the rest of the site is untouched.
 routes = [
-  { pattern = "www.pacificdiscovery.org/programs/*", zone_name = "pacificdiscovery.org" }
+  { pattern = "www.pacificdiscovery.org/programs/*", zone_name = "pacificdiscovery.org" },
+  { pattern = "www.pacificdiscovery.org/lp/*", zone_name = "pacificdiscovery.org" }
 ]
 
 [vars]

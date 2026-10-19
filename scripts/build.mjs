@@ -11,7 +11,10 @@
 //        dist/programs/<slug>/index.html     standalone page (noindex; preview)
 //        dist/programs/<slug>/fragment.json  what the Cloudflare Worker swaps
 //                                            into www.pacificdiscovery.org
-//   4. Publishes the template itself at /_pd/render.mjs for the editor.
+//      Landing pages (template "landing") go to dist/lp/<slug>/ instead and are
+//      served at www.pacificdiscovery.org/lp/<slug>.
+//   4. Publishes the template itself at /_pd/render.mjs for the editor, and
+//      copies static/ (starter photos) to /_pd/static/.
 //
 // If the export can't be fetched the build FAILS on purpose: Netlify then keeps
 // serving the previous deploy instead of publishing an empty site.
@@ -21,6 +24,7 @@
 //   DASHBOARD_URL              default https://dashboard.pacificdiscovery.org
 //   URL                        this site's URL (Netlify sets it)
 //   CANONICAL_BASE             default https://www.pacificdiscovery.org/programs/
+//   LANDING_CANONICAL_BASE     default https://www.pacificdiscovery.org/lp/
 //   GOOGLE_PLACES_API_KEY      optional; fills in Google review widgets (rating +
 //                              count) at build time. The nightly rebuild keeps them fresh.
 //
@@ -29,13 +33,14 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { renderStandalone, renderProgram, seoFor, jsonLd, parseWidget, PROGRAM_CSS } from '../src/render.mjs';
+import { renderStandalone, renderProgram, seoFor, jsonLd, parseWidget, PROGRAM_CSS, templateOf, renderLanding, landingSeo, landingJsonLd, LANDING_CSS, LANDING_BASE } from '../src/render.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
 const DASHBOARD_URL = (process.env.DASHBOARD_URL || 'https://dashboard.pacificdiscovery.org').replace(/\/+$/, '');
 const SITE_URL = (process.env.URL || 'http://localhost:8888').replace(/\/+$/, '');
 const CANONICAL_BASE = process.env.CANONICAL_BASE || 'https://www.pacificdiscovery.org/programs/';
+const LANDING_CANONICAL_BASE = process.env.LANDING_CANONICAL_BASE || `https://www.pacificdiscovery.org${LANDING_BASE}`;
 const TOKEN = process.env.PROGRAM_PAGES_BUILD_TOKEN || '';
 const SAMPLE = process.argv.includes('--sample');
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -134,6 +139,7 @@ async function main() {
   await fs.rm(DIST, { recursive: true, force: true });
   await fs.mkdir(path.join(DIST, '_pd'), { recursive: true });
   await fs.copyFile(path.join(ROOT, 'src', 'render.mjs'), path.join(DIST, '_pd', 'render.mjs'));
+  await fs.cp(path.join(ROOT, 'static'), path.join(DIST, '_pd', 'static'), { recursive: true }).catch((e) => { if (e.code !== 'ENOENT') throw e; });
 
   const programs = await loadPrograms();
   const copied = new Set();
@@ -142,23 +148,26 @@ async function main() {
   for (const prog of programs) {
     if (!SLUG_RE.test(prog.slug || '')) { console.warn(`Skipping invalid slug: ${prog.slug}`); continue; }
     const data = await addGoogleRatings(await localiseMedia(prog.data, copied));
-    const dir = path.join(DIST, 'programs', prog.slug);
+    const landing = templateOf(data) === 'landing';
+    const dir = path.join(DIST, landing ? LANDING_BASE.replace(/\//g, '') : 'programs', prog.slug);
     await fs.mkdir(dir, { recursive: true });
 
-    const seo = seoFor(data, { slug: prog.slug, canonicalBase: CANONICAL_BASE });
-    await fs.writeFile(path.join(dir, 'index.html'), renderStandalone(data, { slug: prog.slug }));
+    const canonicalBase = landing ? LANDING_CANONICAL_BASE : CANONICAL_BASE;
+    const seo = landing ? landingSeo(data, { slug: prog.slug, canonicalBase }) : seoFor(data, { slug: prog.slug, canonicalBase });
+    await fs.writeFile(path.join(dir, 'index.html'), renderStandalone(data, { slug: prog.slug, canonicalBase }));
     await fs.writeFile(path.join(dir, 'fragment.json'), JSON.stringify({
       slug: prog.slug,
+      template: landing ? 'landing' : 'program',
       publishedAt: prog.publishedAt || null,
       title: seo.title,
       description: seo.description,
       canonical: seo.canonical,
       ogImage: seo.ogImage,
-      css: PROGRAM_CSS,
-      html: renderProgram(data),
-      jsonLd: jsonLd(data, { slug: prog.slug, canonicalBase: CANONICAL_BASE }),
+      css: landing ? LANDING_CSS : PROGRAM_CSS,
+      html: landing ? renderLanding(data) : renderProgram(data),
+      jsonLd: landing ? landingJsonLd(data) : jsonLd(data, { slug: prog.slug, canonicalBase: CANONICAL_BASE }),
     }));
-    manifest.push({ slug: prog.slug, name: data.name, publishedAt: prog.publishedAt || null });
+    manifest.push({ slug: prog.slug, name: data.name, template: landing ? 'landing' : 'program', publishedAt: prog.publishedAt || null });
   }
 
   await fs.writeFile(path.join(DIST, '_pd', 'manifest.json'), JSON.stringify({ builtAt: new Date().toISOString(), programs: manifest }, null, 2));

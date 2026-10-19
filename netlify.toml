@@ -33,6 +33,20 @@
     Cache-Control = "public, max-age=0, must-revalidate"
     Access-Control-Allow-Origin = "*"
 
+# Landing pages (template "landing"), served on www at /lp/<slug> by the Worker.
+[[headers]]
+  for = "/lp/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Access-Control-Allow-Origin = "*"
+
+# Photos shipped with starter content (static/ in this repo).
+[[headers]]
+  for = "/_pd/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
 # The template, imported by the editor in pd-dashboard.
 [[headers]]
   for = "/_pd/render.mjs"

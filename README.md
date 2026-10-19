@@ -17,7 +17,8 @@ If the dashboard can't be reached, the build **fails**, and Netlify keeps servin
 | `src/render.mjs` | **The template.** Content model (`SCHEMA`, `SECTIONS`), HTML and CSS (all scoped under `.pdp`). Every value is escaped and every URL goes through `safeUrl()`. |
 | `scripts/build.mjs` | The build. `npm run build:sample` renders `sample/*.json` with no token. |
 | `cloudflare/worker.js`, `wrangler.toml` | Serves published pages on www. Keeps the PHP site's header, nav, footer, GTM/HubSpot and WhatsApp widget, and swaps `<main id="main">` for the program body. |
-| `test/render.test.mjs` | `npm test`: escaping, URL safety, editor hooks absent live, layout, dates, JSON-LD, sample build. |
+| `static/` | Photos that ship with starter content (copied to `/_pd/static/`). |
+| `test/render.test.mjs`, `test/landing.test.mjs` | `npm test`: escaping, URL safety, editor hooks absent live, layout, dates, JSON-LD, sample build, landing pages. |
 
 ## Set up (once)
 
@@ -27,6 +28,28 @@ If the dashboard can't be reached, the build **fails**, and Netlify keeps servin
 4. **Build hook:** Site configuration → Build & deploy → Build hooks → add "Program Pages publish". Put the URL in pd-dashboard as `PROGRAM_SITE_BUILD_HOOK` and redeploy the dashboard.
 5. **If this site's URL isn't `https://pd-program-pages.netlify.app`**, change `PROGRAM_SITE` in two places: pd-dashboard `program-pages/editor.js` and `cloudflare/wrangler.toml`. The CORS header in `netlify.toml` names the dashboard, not this site.
 6. **Worker:** `cd cloudflare && npx wrangler deploy`. It only runs on `www.pacificdiscovery.org/programs/*`. Set `STICKY_TOP` to the height of the site's fixed header (in px) so the program's sticky bar sits under it.
+
+## Landing pages
+
+`src/render.mjs` holds a second template, **landing**, for campaign pages such as
+"Why Pacific Discovery". A page uses it when its JSON has `"template": "landing"`
+(the editor sets this when you create a landing page). Everything else works the same:
+drafts, publishing, history, photos, the build and the Worker.
+
+- **Address:** `www.pacificdiscovery.org/lp/<slug>` (built to `dist/lp/<slug>/`).
+  The Worker has a second route for `/lp/*`. The PHP site has no page there, so the
+  Worker borrows the header and footer from `SHELL_PATH`.
+- **Sections:** hero (photo, two photo prints, stamp), stats strip, reasons, comparison
+  table (our column + up to 3 others; an empty column heading hides it), a week in the
+  life (swipeable), quotes, photo ribbon, safety, pricing with an offer card, FAQ
+  (also output as FAQPage structured data) and a closing call to action. Each can be
+  hidden or reordered.
+- **Buttons** use four links from Page settings: quiz, booklet, advisor and apply.
+- **Starter:** `why-pacific-discovery` in pd-dashboard `program-pages/starters/`. Its photos
+  live in `static/why-pacific-discovery/` here, so **deploy this repo first** or the
+  starter's photos won't load in the editor.
+
+After deploying this repo, run `npx wrangler deploy` from `cloudflare/` once to add the `/lp/*` route.
 
 ## Review widgets
 
