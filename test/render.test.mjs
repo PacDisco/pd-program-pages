@@ -307,9 +307,9 @@ test('tuition promotion: price slash, message, or both; expires on its own', asy
   const facts = (h) => h.slice(h.indexOf('pdp-facts'), h.indexOf('</div></div>', h.indexOf('pdp-facts')));
 
   const both = renderProgram(mk({ promoPrice: 14500, promoText: 'Save $1,000 when you apply by Dec 1', promoEnds: '2999-12-01' }));
-  assert.ok(facts(both).includes('<s class="pdp-price__was"><span class="pdp-sr">Was </span>$15,500</s>'));
-  assert.ok(facts(both).includes('$14,500') && facts(both).includes('Save $1,000 when you apply by Dec 1'));
-  assert.ok(both.includes('about $1,450 per week'), 'weekly figure uses the promo price');
+  assert.ok(facts(both).includes('<s class="pdp-price__was"><span class="pdp-sr">Was </span>$15,500 USD</s>'));
+  assert.ok(facts(both).includes('$14,500 USD') && facts(both).includes('Save $1,000 when you apply by Dec 1'));
+  assert.ok(both.includes('about $1,450 USD per week'), 'weekly figure uses the promo price');
   assert.ok(ld(mk({ promoPrice: 14500, promoEnds: '2999-12-01' })).includes('"price":14500'));
 
   const textOnly = renderProgram(mk({ promoText: 'Early-bird bonus: free gear pack' }));
@@ -322,4 +322,12 @@ test('tuition promotion: price slash, message, or both; expires on its own', asy
   assert.ok(ld(ended).includes('"price":15500'));
   assert.ok(renderProgram(ended, { editable: true }).includes('Promotion ended'));
   assert.ok(!renderProgram(mk({ promoText: '<b>x</b>' })).includes('<b>x</b>'));
+});
+
+test('prices always name their currency', async () => {
+  const { money } = await import('../src/render.mjs');
+  assert.equal(money(15000), '$15,000 USD');
+  assert.equal(money(15000, 'NZD'), '$15,000 NZD');
+  assert.equal(money(2800, 'AUD'), '$2,800 AUD');
+  assert.equal(money(0), '');
 });

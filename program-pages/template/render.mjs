@@ -64,7 +64,9 @@ export function money(n, currency = 'USD') {
   const v = Number(n);
   if (!Number.isFinite(v) || v <= 0) return '';
   const s = v.toLocaleString('en-US', { maximumFractionDigits: 0 });
-  return currency === 'USD' ? `$${s}` : `${currency} ${s}`;
+  // Always name the currency (USD, NZD and AUD all use "$"), e.g. "$15,000 USD".
+  const code = /^[A-Z]{3}$/.test(String(currency)) ? currency : 'USD';
+  return `$${s} ${code}`;
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
