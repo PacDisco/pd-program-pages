@@ -66,7 +66,7 @@
     "imageAlt": "Students bathing elephants in a jungle river in Thailand",
     "imageFocus": "",
     "imageFocusMobile": "",
-    "stampNumber": "25+",
+    "stampNumber": "",
     "stampLabel": "YEARS",
     "stampRing": "SINCE 2001 · 25+ YEARS OF GAP YEARS ·"
   },
@@ -242,19 +242,19 @@
     "ratingUrl": "",
     "quotes": [
       {
-        "quote": "[Student quote about what was different – a real review, used with permission.]",
-        "name": "[Student name]",
-        "detail": "[Program, Season Year]"
+        "quote": "This South America Semester program genuinely made me grow so much as a person.",
+        "name": "Lara Z.",
+        "detail": "South America Semester, Fall 2025"
       },
       {
-        "quote": "[Parent quote about safety, communication or how their child came home changed.]",
-        "name": "[Parent name]",
-        "detail": "Parent of a [Program] student"
+        "quote": "As a parent, I felt my son was in the best hands.",
+        "name": "Elisheva M.",
+        "detail": "Parent · Polynesian Journey Semester, 2025"
       },
       {
-        "quote": "[Student quote comparing us to another program they considered.]",
-        "name": "[Student name]",
-        "detail": "[Program, Season Year]"
+        "quote": "This program was part of me becoming who I am now and I couldn’t be happier that I picked PD to do it with.",
+        "name": "Liam",
+        "detail": "Polynesian Journey Semester, 2025"
       }
     ]
   },

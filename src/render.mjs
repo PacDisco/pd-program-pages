@@ -1270,7 +1270,7 @@ export function blankLanding(name = 'New landing page') {
       applyUrl: 'https://www.pacificdiscovery.org/apply',
     },
     layout: LANDING_SECTIONS.map((s) => ({ key: s.key, show: true })),
-    hero: { eyebrow: '', headline: name, headlineAccent: '', intro: '[One or two sentences]', primaryText: 'Take the 3-minute quiz', secondaryText: 'Request a program booklet', image: '', imageAlt: '', imageFocus: '', imageFocusMobile: '', stampNumber: '25+', stampLabel: 'YEARS', stampRing: 'SINCE 2001 · 25+ YEARS OF GAP YEARS ·' },
+    hero: { eyebrow: '', headline: name, headlineAccent: '', intro: '[One or two sentences]', primaryText: 'Take the 3-minute quiz', secondaryText: 'Request a program booklet', image: '', imageAlt: '', imageFocus: '', imageFocusMobile: '', stampNumber: '', stampLabel: 'YEARS', stampRing: 'SINCE 2001 · 25+ YEARS OF GAP YEARS ·' },
     stats: { items: [] },
     reasons: { eyebrow: '', heading: 'Why families choose us', headingAccent: '', items: [] },
     compare: { eyebrow: '', heading: 'How we compare', headingAccent: '', usTag: 'Our way', usLabel: 'Pacific Discovery', col1: '', col2: '', col3: '', note: '', rows: [] },
@@ -1515,9 +1515,9 @@ export const LANDING_CSS = `
 .pdl-head{max-width:700px;display:flex;flex-direction:column;gap:14px;margin-bottom:48px}
 .pdl-head-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:20px 24px;margin-bottom:40px}
 .pdl-head-row .pdl-head{margin-bottom:0}
-.pdl .pdl-eyebrow{display:inline-flex;align-items:center;gap:12px;color:var(--pdl-topaz-dk);font-weight:600;letter-spacing:.16em;font-size:14px;text-transform:uppercase}
+.pdl .pdl-eyebrow{display:inline-flex;align-items:center;gap:14px;color:var(--pdl-topaz-dk);font-weight:600;letter-spacing:.16em;font-size:17.5px;text-transform:uppercase}
 .pdl .pdl-eyebrow span{letter-spacing:.16em;text-transform:uppercase}
-.pdl-eyebrow__line{width:36px;height:2px;background:var(--pdl-topaz);flex:none}
+.pdl-eyebrow__line{width:44px;height:2px;background:var(--pdl-topaz);flex:none}
 .pdl .pdl-eyebrow--topaz{color:var(--pdl-topaz)}
 .pdl .pdl-eyebrow--center{justify-content:center;color:var(--pdl-topaz)}
 .pdl .pdl-head--inv .pdl-h2{color:#fff}
