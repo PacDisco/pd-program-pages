@@ -154,7 +154,8 @@ async function main() {
 
     const canonicalBase = landing ? LANDING_CANONICAL_BASE : CANONICAL_BASE;
     const seo = landing ? landingSeo(data, { slug: prog.slug, canonicalBase }) : seoFor(data, { slug: prog.slug, canonicalBase });
-    await fs.writeFile(path.join(dir, 'index.html'), renderStandalone(data, { slug: prog.slug, canonicalBase }));
+    const bookletEndpoint = `${DASHBOARD_URL}/api/booklet-request`;
+    await fs.writeFile(path.join(dir, 'index.html'), renderStandalone(data, { slug: prog.slug, canonicalBase, bookletEndpoint }));
     await fs.writeFile(path.join(dir, 'fragment.json'), JSON.stringify({
       slug: prog.slug,
       template: landing ? 'landing' : 'program',
@@ -164,7 +165,7 @@ async function main() {
       canonical: seo.canonical,
       ogImage: seo.ogImage,
       css: landing ? LANDING_CSS : PROGRAM_CSS,
-      html: landing ? renderLanding(data) : renderProgram(data),
+      html: landing ? renderLanding(data, { slug: prog.slug, bookletEndpoint }) : renderProgram(data, { slug: prog.slug, bookletEndpoint }),
       jsonLd: landing ? landingJsonLd(data) : jsonLd(data, { slug: prog.slug, canonicalBase: CANONICAL_BASE }),
     }));
     manifest.push({ slug: prog.slug, name: data.name, template: landing ? 'landing' : 'program', publishedAt: prog.publishedAt || null });

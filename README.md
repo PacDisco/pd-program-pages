@@ -18,7 +18,7 @@ If the dashboard can't be reached, the build **fails**, and Netlify keeps servin
 | `scripts/build.mjs` | The build. `npm run build:sample` renders `sample/*.json` with no token. |
 | `cloudflare/worker.js`, `wrangler.toml` | Serves published pages on www. Keeps the PHP site's header, nav, footer, GTM/HubSpot and WhatsApp widget, and swaps `<main id="main">` for the program body. |
 | `static/` | Photos that ship with starter content (copied to `/_pd/static/`). |
-| `test/render.test.mjs`, `test/landing.test.mjs` | `npm test`: escaping, URL safety, editor hooks absent live, layout, dates, JSON-LD, sample build, landing pages. |
+| `test/render.test.mjs`, `test/landing.test.mjs`, `test/booklet.test.mjs` | `npm test`: escaping, URL safety, editor hooks absent live, layout, dates, JSON-LD, sample build, landing pages. |
 
 ## Set up (once)
 
@@ -45,6 +45,23 @@ drafts, publishing, history, photos, the build and the Worker.
   (also output as FAQPage structured data) and a closing call to action. Each can be
   hidden or reordered.
 - **Buttons** use four links from Page settings: quiz, booklet, advisor and apply.
+
+## Info booklet form
+
+**Page settings → Info booklet download link** is the booklet itself (e.g. a PDF).
+On the live page every booklet button (program hero **Get the itinerary**, **Download
+full itinerary**, the closing call to action when there's no call link, and the landing
+pages' booklet buttons) opens a short form: first name, last name, email, phone, student
+or parent (all required). It posts to pd-dashboard `/api/booklet-request`, which saves the lead to HubSpot,
+emails the visitor the link and answers with it; the page then opens the booklet.
+
+- The link is **not** in the live HTML. The dashboard reads it from the published page.
+- Pages still pointing at `…/request-program-booklet` keep a plain link (no form).
+- The editor, and renders without a slug, show plain links.
+- The build passes `${DASHBOARD_URL}/api/booklet-request` as the endpoint.
+- `#get-booklet` on the page address opens the form on load.
+
+Details, HubSpot mapping and settings: `BOOKLET-REQUESTS.md` in pd-dashboard.
 - **Starter:** `why-pacific-discovery` in pd-dashboard `program-pages/starters/`. Its photos
   live in `static/why-pacific-discovery/` here, so **deploy this repo first** or the
   starter's photos won't load in the editor.
