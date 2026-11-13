@@ -253,6 +253,19 @@ test('hero photo focus: separate phone and computer positions, validated', async
   assert.ok(!bad.includes('<script>x') && !bad.includes('--pdp-pos:'));
 });
 
+test('item photo focus: <path>Focus sets object-position, validated, hero untouched', () => {
+  const week = { title: 'W', location: '', body: 'B', tags: '', image: 'https://example.com/a.jpg', imageAlt: 'A' };
+  const p = normalizeProgram({ ...sample,
+    hero: { ...sample.hero, imageFocus: '40% 30%' },
+    itinerary: { ...sample.itinerary, weeks: [{ ...week, imageFocus: '20% 80%' }, { ...week, imageFocus: '"><script>x</script>' }] } });
+  const html = renderProgram(p);
+  const imgs = html.match(/<img class="pdp-img pdp-week__img"[^>]*>/g);
+  assert.ok(imgs[0].includes('style="object-position:20% 80%"'));
+  assert.ok(!imgs[1].includes('style='));
+  assert.ok(!html.includes('<script>x'));
+  assert.ok(!/<img class="pdp-img pdp-hero__img"[^>]*style=/.test(html));
+});
+
 test('testimonials: quote marks added by the page, typed ones stripped', async () => {
   const { stripQuotes } = await import('../src/render.mjs');
   assert.equal(stripQuotes('“Best trip ever.”'), 'Best trip ever.');
