@@ -23,6 +23,11 @@
 //
 // Vars (wrangler.toml): PROGRAM_SITE, SHELL_PATH, STICKY_TOP, STICKY_TOP_WIDE,
 //   STICKY_WIDE_FROM, PREVIEW_ORIGIN
+//
+// Retired URLs: when a /programs or /lp request would 404, legacy-redirects.js
+// gets a chance to 301 it (retired slugs, and old links carrying ?utm_ queries).
+
+import { legacyRedirect } from './legacy-redirects.js';
 
 // /programs/<slug> and /lp/<slug>. The first group is the folder on the program site.
 export const SLUG_RE = /^\/(programs|lp)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/;
@@ -58,13 +63,19 @@ export default {
     const preview = /^https:\/\/[a-z0-9.-]+$/i.test(env.PREVIEW_ORIGIN || '') ? env.PREVIEW_ORIGIN : '';
     const base = preview || url.origin;
     const passThrough = () => (preview ? fetch(new URL(url.pathname + url.search, preview)) : fetch(request));
+    // Same as passThrough, but a 404 gets one chance to become a redirect.
+    const passOrRedirect = async () => {
+      const res = await passThrough();
+      if (res.status !== 404 || preview) return res;
+      return (await legacyRedirect(request)) || res;
+    };
     if (!m || (request.method !== 'GET' && request.method !== 'HEAD') || url.searchParams.has('pd-legacy')) {
-      return passThrough();
+      return passOrRedirect();
     }
     const [, dir, slug] = m;
 
     const frag = await loadFragment(env, slug, dir);
-    if (!frag) return passThrough();
+    if (!frag) return passOrRedirect();
 
     let origin = await passThrough();
     if (origin.status === 404) {
