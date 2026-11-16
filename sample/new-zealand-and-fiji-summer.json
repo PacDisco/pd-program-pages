@@ -3,7 +3,7 @@
   "name": "New Zealand & Fiji Summer Program",
   "seo": {
     "title": "New Zealand & Fiji Summer Program | Pacific Discovery",
-    "description": "New Zealand & Fiji in 4 weeks: Waitangi Treaty Grounds, conservation at Tawharanui, mountain biking and rafting in Rotorua, a Fijian village stay and snorkeling off Mana Island. Ages 17–22.",
+    "description": "Four weeks in New Zealand and Fiji for 17–22 year olds: conservation with DOC, rafting in Rotorua, a Fijian village stay and coral restoration on Drawaqa Island.",
     "ogImage": "https://www.pacificdiscovery.org/library/images/Program%20Featured%20Images/new-zealand-fiji-college-summer.png"
   },
   "settings": {
@@ -72,9 +72,9 @@
     }
   ],
   "hero": {
-    "eyebrow": "Summer program · New Zealand & Fiji",
-    "headline": "New Zealand’s North Island, then island life in Fiji",
-    "intro": "Volunteer at Tawharanui, mountain bike and raft in Rotorua, stay in a Fijian village and snorkel off Mana Island.",
+    "eyebrow": "College summer program · New Zealand & Fiji",
+    "headline": "Four weeks of conservation, culture and island life",
+    "intro": "Work alongside DOC at Tawharanui, raft in Rotorua, stay in a Fijian village and help restore coral on Drawaqa Island, with free days built in to explore on your own terms.",
     "image": "https://www.pacificdiscovery.org/library/images/programs/New%20Zealand%20%26%20Australia/IMG_20190310_110237.jpg",
     "imageAlt": "Students mountain biking on a trail through tall forest",
     "imageFocus": "",
@@ -107,25 +107,25 @@
     "items": [
       {
         "title": "Two countries in four weeks",
-        "body": "Two weeks on New Zealand’s North Island, from the Bay of Islands to Wellington, then two weeks in Fiji, from the Sigatoka Valley to Mana Island.",
+        "body": "Two weeks on New Zealand’s North Island, from the Bay of Islands to Rotorua, then two weeks in Fiji, from the Sigatoka Valley to Drawaqa Island in the Yasawas.",
         "image": "",
         "imageAlt": ""
       },
       {
         "title": "Conservation in both countries",
-        "body": "Three days on a conservation project with DOC at Tawharanui Regional Park, and sand dune conservation at Sigatoka Sand Dunes National Park in Fiji.",
+        "body": "Three days with DOC at Tawharanui in New Zealand, then sand dune, mangrove and coral conservation in Fiji. Real service you can talk about in applications and interviews.",
         "image": "",
         "imageAlt": ""
       },
       {
         "title": "A Fijian village stay",
-        "body": "Three nights in Culanuku Village, starting with a welcome kava ceremony, then craft making and a fishing trip with our hosts.",
+        "body": "Three nights in Culanuku Village, starting with a welcome kava ceremony. We join our hosts for church on Sunday and head out on a fishing trip with the community.",
         "image": "https://www.pacificdiscovery.org/library/images/programs/Fiji/IMG_6378.jpg",
         "imageAlt": "Student on a boat holding up a string of fish"
       },
       {
-        "title": "All-inclusive On The Ground",
-        "body": "3 Meals a day, lodging, in-country ground travel, activities, entry fees and guides are included.",
+        "title": "Free time built in, logistics handled",
+        "body": "A free day at every stage, from Paihia to Drawaqa Island, to choose your own adventure. Three meals a day, lodging, in-country travel, activities, entry fees and guides are included.",
         "image": "https://www.pacificdiscovery.org/library/images/programs/New%20Zealand%20%26%20Australia/IMG_20190310_110237.jpg",
         "imageAlt": "Students mountain biking on a trail through tall forest"
       }
@@ -134,23 +134,23 @@
   "route": {
     "heading": "Your journey at a glance",
     "mapImage": "",
-    "mapAlt": "Route map from Auckland north to Paihia, south to Rotorua and Wellington, then Nadi, the Sigatoka Valley, Pacific Harbour and Mana Island in Fiji",
+    "mapAlt": "Route map from Auckland north to Paihia, back south to Tawharanui and Rotorua, then Nadi, the Sigatoka Valley, Culanuku Village, Pacific Harbour and Drawaqa Island in Fiji",
     "phases": [
       {
         "label": "Week 1",
-        "text": "Arrival in Auckland, the Waitangi Treaty Grounds and kayaking in Paihia, then conservation work at Tawharanui"
+        "text": "Arrival in Auckland, the Waitangi Treaty Grounds and a free day in the Bay of Islands, then conservation with DOC at Tawharanui"
       },
       {
         "label": "Week 2",
-        "text": "Waimangu Volcanic Valley, mountain biking and rafting in Rotorua, then Te Papa, Zealandia and Parliament in Wellington"
+        "text": "Finish the Tawharanui project, then a free day and white-water rafting in Rotorua, and a free day in Auckland"
       },
       {
         "label": "Week 3",
-        "text": "Fly to Fiji for sand dune conservation in the Sigatoka Valley, a stay in Culanuku Village and river tubing at Pacific Harbour"
+        "text": "Fly to Fiji for sand dune conservation, a welcome kava ceremony and a stay in Culanuku Village, then mangrove conservation at Pacific Harbour"
       },
       {
         "label": "Week 4",
-        "text": "Kila World, snorkeling trips on Mana Island and program wrap in Nadi"
+        "text": "A free day at Pacific Harbour, then coral conservation, manta rays and program wrap on Drawaqa Island before flying home from Nadi"
       }
     ]
   },
@@ -160,7 +160,7 @@
     "items": [
       {
         "title": "Lodges & hostels",
-        "body": "Peppertree Lodge in Paihia, Haka House in Rotorua and Wellington, and Blue Water Lodge in Nadi.",
+        "body": "Peppertree Lodge in Paihia, Haka House in Rotorua and Auckland, and Blue Water Lodge in Nadi.",
         "image": "",
         "imageAlt": ""
       },
@@ -172,7 +172,7 @@
       },
       {
         "title": "Village & island stays",
-        "body": "Three nights in Culanuku Village, Club Oceanus at Pacific Harbour and Ratu Kini Dive Resort on Mana Island.",
+        "body": "Three nights in Culanuku Village, Club Oceanus at Pacific Harbour and Barefoot Manta on Drawaqa Island.",
         "image": "",
         "imageAlt": ""
       }
@@ -184,34 +184,34 @@
     "note": "This is a guide to what you can expect to do on program. The order in which activities occur might vary. Itineraries are subject to change.",
     "weeks": [
       {
-        "title": "Northland history & Tawharanui",
+        "title": "Waitangi & Tawharanui",
         "location": "Auckland → Paihia → Tawharanui, New Zealand",
-        "body": "Kia ora, welcome to New Zealand! You’ll meet your Program Instructors in Auckland, then we head north to Paihia in the Bay of Islands for orientation. Here we visit the Waitangi Treaty Grounds to learn how New Zealand’s history was shaped, and spend a day kayaking with Moana Kayak.\n\nThen we drive south to Tawharanui Regional Park and settle into the campground, where we begin our conservation project alongside DOC.",
-        "tags": "Orientation, History, Kayaking",
+        "body": "Kia ora, welcome to New Zealand! You’ll meet your Program Instructors in Auckland and settle in at Ōrewa Beach for orientation. Then we head north to Paihia in the Bay of Islands, where we visit the Waitangi Treaty Grounds to learn how New Zealand’s founding document shaped the country. A free day lets you kayak, snorkel, dive, go sailing or take the ferry to historic Russell.\n\nThen we drive south to Tawharanui Regional Park, set up camp and begin our conservation project alongside DOC.",
+        "tags": "Orientation, History, Conservation",
         "image": "",
         "imageAlt": ""
       },
       {
-        "title": "Rotorua adventures & Wellington",
-        "location": "Tawharanui → Rotorua → Wellington, New Zealand",
-        "body": "A final day of conservation work wraps up our time at Tawharanui before we travel to Rotorua, the geothermal heartland of the country. We explore Waimangu Volcanic Valley and join a Matariki experience, go mountain biking with Planet Bike and have a day to explore.\n\nAfter rafting with Rotorua Rafting, we travel south to Wellington, the capital, to visit Te Papa, the national museum, Zealandia and Parliament.",
-        "tags": "Conservation, Mountain biking, Rafting",
+        "title": "Conservation & Rotorua",
+        "location": "Tawharanui → Rotorua → Auckland, New Zealand",
+        "body": "We spend two more days on the conservation project at Tawharanui, then travel to Rotorua, the geothermal heart of the North Island. A free day lets you choose your own adventure: mountain biking, the luge, geothermal parks or the hot pools. Then we take on the rapids together on a white-water rafting trip.\n\nWe finish our time in New Zealand back in Auckland with a free day in the city. Head to the Viaduct, the museums or the Sky Tower, climb Mount Eden, or take the ferry out to Rangitoto Island.",
+        "tags": "Conservation, Rafting, Free days",
         "image": "https://www.pacificdiscovery.org/library/images/programs/New%20Zealand%20%26%20Australia/IMG_20190310_110237.jpg",
         "imageAlt": "Students mountain biking on a trail through tall forest"
       },
       {
         "title": "Village life in Fiji",
-        "location": "Nadi → Culanuku Village → Pacific Harbour, Fiji",
-        "body": "We fly from Wellington to Nadi and start our time in Fiji with an orientation. In the Sigatoka Valley we get a cultural introduction and work on a sand dune conservation project at Sigatoka Sand Dunes National Park.\n\nThen we transfer to Culanuku Village, where a welcome kava ceremony opens our stay. We spend a day craft making and head out on a fishing trip with our hosts, before moving to Club Oceanus at Pacific Harbour for a day of river tubing.",
-        "tags": "Culture, Conservation, River tubing",
+        "location": "Nadi → Sigatoka → Culanuku Village → Pacific Harbour, Fiji",
+        "body": "We fly from Auckland to Nadi and start our time in Fiji with an orientation. In the Sigatoka Valley we work on a sand dune conservation project at Sigatoka Sand Dunes National Park, then transfer to Culanuku Village, where a welcome kava ceremony opens our stay.\n\nSunday is a day for church and family, so we join our hosts for church, then head out on a fishing trip with the community. Next we move to Club Oceanus at Pacific Harbour and join a mangrove conservation project protecting the coastline.",
+        "tags": "Culture, Conservation, Village stay",
         "image": "https://www.pacificdiscovery.org/library/images/programs/Fiji/IMG_6378.jpg",
         "imageAlt": "Student on a boat holding up a string of fish"
       },
       {
-        "title": "Mana Island & farewell",
-        "location": "Pacific Harbour → Mana Island → Nadi, Fiji",
-        "body": "A day at Kila World rounds off our time at Pacific Harbour, then we travel back to Nadi and take the ferry to Mana Island.\n\nWe stay at Ratu Kini Dive Resort and head out on two snorkeling trips. Then we take the ferry back to Nadi for our program wrap, reflecting on everything we’ve experienced together, before flying home from Nadi.",
-        "tags": "Snorkeling, Island, Program wrap",
+        "title": "Drawaqa Island & farewell",
+        "location": "Pacific Harbour → Drawaqa Island → Nadi, Fiji",
+        "body": "A free day at Pacific Harbour lets you go river tubing, visit Kila World or try the Beqa Lagoon shark dive. Then we travel to Drawaqa Island in the Yasawa group and stay at Barefoot Manta.\n\nWe spend a day on a coral conservation project, learning how reefs are restored, and have a free day to snorkel, dive, hike, kayak or swim with manta rays. We wrap up the program on the island, then head back to Nadi for our last night before flying home.",
+        "tags": "Coral conservation, Snorkeling, Program wrap",
         "image": "",
         "imageAlt": ""
       }
@@ -223,7 +223,7 @@
     "notes": [
       {
         "title": "Free time",
-        "body": "Each week there is some designated free time to catch up on email and laundry, rest and explore with others in the group."
+        "body": "There’s a free day at every stage of the program: Paihia, Rotorua, Auckland, Pacific Harbour and Drawaqa Island. Pick an optional activity, explore with friends or just rest and catch up on laundry."
       },
       {
         "title": "Phones & wifi",
@@ -231,7 +231,7 @@
       },
       {
         "title": "Fitness needed",
-        "body": "Low activity level. Anyone with average fitness and enthusiasm for the outdoors and new experiences will be fine. Expect kayaking, mountain biking, rafting, river tubing and snorkeling, and some physical work on the conservation projects."
+        "body": "Low activity level. Anyone with average fitness and enthusiasm for the outdoors and new experiences will be fine. Expect rafting and snorkeling, optional kayaking, biking and diving, and some physical work on the conservation projects."
       }
     ]
   },
@@ -240,7 +240,13 @@
     "items": [
       {
         "title": "History and culture in two countries",
-        "body": "Learn how New Zealand’s history was shaped at the Waitangi Treaty Grounds, visit Te Papa and Parliament in Wellington, then live and learn alongside our hosts in Culanuku Village in Fiji.",
+        "body": "Learn how New Zealand’s founding document was signed at the Waitangi Treaty Grounds, then live and learn alongside our hosts in Culanuku Village in Fiji.",
+        "linkText": "",
+        "linkUrl": ""
+      },
+      {
+        "title": "Service you can put on your résumé",
+        "body": "Hands-on conservation with DOC in New Zealand, then sand dune, mangrove and coral projects in Fiji. You’ll come home with real experience to talk about in college applications, job interviews and scholarship essays.",
         "linkText": "",
         "linkUrl": ""
       },
@@ -257,19 +263,23 @@
     "items": [
       {
         "q": "How fit do I need to be?",
-        "a": "This program has a low activity level and suits anyone of average fitness with an enthusiasm for the outdoors. You don’t need experience with any of the activities, but be ready to try kayaking, mountain biking, rafting and snorkeling. The conservation projects also involve some physical work."
+        "a": "This program has a low activity level and suits anyone of average fitness with an enthusiasm for the outdoors. You don’t need experience with any of the activities, but be ready to raft and snorkel, with optional kayaking, mountain biking and diving on free days. The conservation projects also involve some physical work."
+      },
+      {
+        "q": "How much free time is there?",
+        "a": "This program is built for college-aged travelers, so there’s a free day at every stage: Paihia, Rotorua, Auckland, Pacific Harbour and Drawaqa Island. Instructors are always on call, and free time comes with check-ins and clear boundaries."
       },
       {
         "q": "Where will I stay?",
-        "a": "Mostly lodges and hostels, plus camping at Tawharanui during our conservation project, three nights in Culanuku Village in Fiji and a dive resort on Mana Island."
+        "a": "Mostly lodges and hostels, plus camping at Tawharanui during our conservation project, three nights in Culanuku Village in Fiji and Barefoot Manta on Drawaqa Island."
       },
       {
         "q": "What is the village stay like?",
-        "a": "We spend three nights in Culanuku Village. Our stay begins with a welcome kava ceremony, and we spend our days craft making and fishing with our hosts."
+        "a": "We spend three nights in Culanuku Village. Our stay begins with a welcome kava ceremony, we join our hosts for church on Sunday, and we head out on a fishing trip with the community."
       },
       {
         "q": "How do we get around?",
-        "a": "By group van in New Zealand, with a flight from Wellington to Nadi. In Fiji we travel by road transfer and take the ferry to and from Mana Island."
+        "a": "By group van in New Zealand, with a flight from Auckland to Nadi. In Fiji we travel by road transfer and by boat to and from Drawaqa Island."
       },
       {
         "q": "What's included, and what isn't?",
