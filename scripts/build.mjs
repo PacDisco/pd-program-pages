@@ -33,7 +33,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { renderStandalone, renderProgram, seoFor, jsonLd, parseWidget, PROGRAM_CSS, templateOf, renderLanding, landingSeo, landingJsonLd, LANDING_CSS, LANDING_BASE } from '../src/render.mjs';
+import { renderStandalone, renderProgram, seoFor, jsonLd, parseWidget, pickRelated, PROGRAM_CSS, templateOf, renderLanding, landingSeo, landingJsonLd, LANDING_CSS, LANDING_BASE } from '../src/render.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
@@ -145,9 +145,21 @@ async function main() {
   const copied = new Set();
   const manifest = [];
 
+  // Localise every page first so "You may also like" can be filled from the
+  // full set of published program pages (Automatic mode, the default).
+  const ready = [];
   for (const prog of programs) {
     if (!SLUG_RE.test(prog.slug || '')) { console.warn(`Skipping invalid slug: ${prog.slug}`); continue; }
-    const data = await addGoogleRatings(await localiseMedia(prog.data, copied));
+    ready.push({ ...prog, data: await addGoogleRatings(await localiseMedia(prog.data, copied)) });
+  }
+  const pool = ready.filter((x) => templateOf(x.data) !== 'landing');
+  for (const x of pool) {
+    const rel = x.data.related || {};
+    if (rel.mode !== 'Manual') x.data.related = { ...rel, items: pickRelated(x.slug, x.data, pool, { canonicalBase: CANONICAL_BASE }) };
+  }
+
+  for (const prog of ready) {
+    const data = prog.data;
     const landing = templateOf(data) === 'landing';
     const dir = path.join(DIST, landing ? LANDING_BASE.replace(/\//g, '') : 'programs', prog.slug);
     await fs.mkdir(dir, { recursive: true });

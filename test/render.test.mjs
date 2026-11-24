@@ -127,6 +127,7 @@ test('every list in SCHEMA has a blank that renders', () => {
     assert.ok(Array.isArray(list), lp);
     setPath(p, lp, [structuredClone(def.blank)]);
   }
+  p.related.mode = 'Manual'; // Automatic mode has no editable list
   const html = renderProgram(p, { editable: true });
   for (const lp of Object.keys(SCHEMA.lists)) assert.ok(html.includes(`data-item="${lp}.0"`), lp);
 });
@@ -343,4 +344,28 @@ test('prices always name their currency', async () => {
   assert.equal(money(15000, 'NZD'), '$15,000 NZD');
   assert.equal(money(2800, 'AUD'), '$2,800 AUD');
   assert.equal(money(0), '');
+});
+
+test('related: Automatic picks similar published pages, Manual keeps the list', async () => {
+  const { pickRelated, programKind } = await import('../src/render.mjs');
+  const mk = (name, countries, tuition, weeks = 4) => ({ ...blankProgram(name), facts: { ...blankProgram(name).facts, countries, tuition, weeks } });
+  const pool = [
+    { slug: 'fiji-summer', data: mk('Fiji Summer Program', 'Fiji', 6000, 2) },
+    { slug: 'nz-fiji-summer', data: mk('New Zealand & Fiji Summer Program', 'New Zealand · Fiji', 7000) },
+    { slug: 'bali-summer', data: mk('Bali Summer Program', 'Indonesia', 6550) },
+    { slug: 'japan-mini', data: mk('Japan Mini Semester', 'Japan', 10500, 6) },
+    { slug: 'sa-semester', data: mk('South America Semester Abroad', 'Peru · Bolivia', 15500, 10) },
+  ];
+  assert.equal(programKind(pool[3].data, 'japan-mini'), 'mini');
+  const r = pickRelated('fiji-summer', pool[0].data, pool, { count: 2 });
+  assert.deepEqual(r.map((x) => x.title), ['New Zealand & Fiji Summer Program', 'Bali Summer Program']);
+  assert.equal(r[0].meta, '4 weeks · $7,000');
+  assert.equal(r[0].url, 'https://www.pacificdiscovery.org/programs/nz-fiji-summer');
+  assert.ok(!pickRelated('fiji-summer', pool[0].data, pool).some((x) => x.url.endsWith('/fiji-summer')), 'never links to itself');
+  const p = blankProgram('X');
+  assert.equal(p.related.mode, 'Automatic');
+  assert.match(renderProgram(p, { editable: true }), /Automatic: when this page is published/);
+  assert.doesNotMatch(renderProgram(p), /id="related"/, 'empty automatic section is left out of the live page');
+  p.related = { heading: 'More', mode: 'Manual', items: [{ title: 'Hand picked', meta: '', url: 'https://x.test/', image: '' }] };
+  assert.match(renderProgram(p), /Hand picked/);
 });
