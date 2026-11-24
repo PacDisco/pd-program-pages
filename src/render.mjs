@@ -1123,6 +1123,13 @@ a.pdp-next:focus-visible{outline:3px solid var(--pdp-ink);outline-offset:2px}
 .pdp-widget{position:relative;display:inline-flex;align-items:center;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.15);text-shadow:none;max-width:100%}
 .pdp-widget__frame{border:0;display:block;max-width:100%}
 .pdp-widget--gooverseas{min-height:84px;min-width:260px}
+.pdp-widget--gooverseas .go-overseas-review-widget-component{display:block;line-height:0}
+.pdp-widget--gooverseas iframe{display:block;max-width:100%}
+/* GoOverseas sizes its short rating badge at 130px tall but draws only ~100px, leaving a white strip under it. */
+/* Other GoOverseas badges draw their own background, so drop our white card around them. */
+.pdp-widget--gooverseas:not(:has(.widget-providershort)){background:transparent;box-shadow:none;border-radius:0;min-height:0;min-width:0}
+.pdp-widget--gooverseas:has(.widget-providershort){min-height:0;min-width:0}
+.pdp-widget--gooverseas .widget-providershort iframe{height:100px!important}
 .pdp-widget--note{padding:12px 16px;font-size:13px;font-weight:500;color:var(--pdp-muted);border:2px dashed #c9d6da;background:rgba(255,255,255,.95);min-height:60px}
 .pdp-widget--bad{border-color:#e3a08f;color:#a8361a}
 .pde-cover{position:absolute;inset:0;cursor:pointer}
